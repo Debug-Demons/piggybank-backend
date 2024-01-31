@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import LineChart from './LineChart';
 
 const HomeScreen = ({ route }) => {
   // Mock account information (replace with actual user data)
@@ -15,6 +16,7 @@ const HomeScreen = ({ route }) => {
       <Text style={styles.text}>Username: {accountInfo.username}</Text>
       <Text style={styles.text}>Email: {accountInfo.email}</Text>
       <Text style={styles.text}>Balance: {accountInfo.balance}</Text>
+      <LineChart/>
     </View>
   );
 };
