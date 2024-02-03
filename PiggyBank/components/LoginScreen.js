@@ -12,7 +12,8 @@ const LoginScreen = ({ navigation}) => {
 
   const handleLogin = async () => {
     //TEST HOMEPAGE
-    navigation.navigate('Home', {username})
+    navigation.replace('Business', {username})
+    // Remove after database connection
     try {
       const response = await axios.post(`${API_URL}/login`, {
         username,
@@ -22,12 +23,12 @@ const LoginScreen = ({ navigation}) => {
 
       if (response.data.success || true) { //TEST LOGIN
         if (userType == 'User') {
-          navigation.navigate('Home', { username });
+          navigation.replace('User', { username });
         } else if (userType == 'Business') {
-          navigation.navigate('Home', { username });
+          navigation.replace('Business', { username });
         }
       } else {
-        Alert.alert('Login Failed', 'Invalid credentials');
+        
       }
     } catch (error) {
       console.error('Error during login:', error);
