@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+
+config/firebaseConfig.js
+# Environment variables file
+.env
+
+# Editor files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
