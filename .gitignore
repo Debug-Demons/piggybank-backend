@@ -1,2 +1,3 @@
 PiggyBackend/config/firebaseConfig.js
-
+PiggyBackend/config/firebaseAdminConfig.js
+PiggyBackend/config/piggybank-firebase-adminsdk.json
