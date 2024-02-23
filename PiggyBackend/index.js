@@ -1,24 +1,43 @@
 // Import express using ESM syntax
 import express from 'express';
+const app = express();
+
 //import { authenticateUser } from './authMiddleware.js';
 //import authRoutes from './api/auth.js';
-import { initializeApp } from 'firebase-admin/app';
+import admin from 'firebase-admin';
+import { createRequire } from 'module';
 
-import credentials from './config/piggybank-firebase-adminsdk.json?type=json';
+// Create a require function
+const require = createRequire(import.meta.url);
 
+// Use require to load the JSON file
+const credentials = require('./config/piggybank-firebase-adminsdk.json');
 
-initializeApp({
+admin.initializeApp({
   credential: admin.credential.cert(credentials)
 });
 
+app.use(express.json());
+
+app.use(express.urlencoded({extended: true}));
+
 app.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+  const user = { 
+    email: req.body.email,
+    password: req.body.password
+  } 
   try {
-    const user = await admin.auth().createUser({
-      email,
-      password
+    const userResponse = await admin.auth().createUser({
+      email: req.body.email,
+      password: req.body.password,
+      emailVerified: false,
+      disabled: false
     });
-    res.json({ message: 'User created successfully!', userId: user.uid });
+    res.json({ 
+      message: 'User created successfully!', 
+      userId: userResponse.uid,
+      user: userResponse 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating user' });
@@ -26,15 +45,11 @@ app.post('/register', async (req, res) => {
 });
 
 // Create a new express application instance
-const app = express();
 
 // Define the port
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
-app.use(express.json());
-
-app.use(express.urlencoded({extended: true}));
 
 //app.use('/api/auth', authRoutes);
 //const registerRoute = authRoutes.register;
