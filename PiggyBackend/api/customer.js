@@ -6,21 +6,27 @@ const router = express.Router();
 const db = admin.firestore(); // Adjusted to call firestore as a method: admin.firestore()
 
 // Endpoint for getting user records from uid
+// Endpoint for getting user records based on a UID field within the documents
 router.get('/:uid', async (req, res) => {
     const uid = req.params.uid;
     try {
-        const userRef = db.collection('Customers').doc(uid);
-        const doc = await userRef.get();
-        if (doc.exists) {
-            res.status(200).json(doc.data());
+        // Query the 'Customers' collection for documents where the 'UID' field matches the provided UID
+        const querySnapshot = await db.collection('Customers').where('UID', '==', uid).get();
+
+        if (!querySnapshot.empty) {
+            // Assuming UID is unique and there's only one document matching it
+            const docData = querySnapshot.docs[0].data();
+            res.status(200).json(docData);
         } else {
+            // If no documents found
             res.status(404).send({ message: 'Customer not found' });
         }
     } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).send({ message: 'Failed to retrieve user' });
+        console.error('Error fetching customer:', error);
+        res.status(500).send({ message: 'Failed to retrieve customer' });
     }
 });
+
 
 // Define a Post Route to create a new user/customer.
 router.post('/createCustomerUser', async (req, res) => {
