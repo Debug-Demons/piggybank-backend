@@ -1,31 +1,37 @@
 // Import express using ESM syntax
 import express from 'express';
-const app = express();
-
-//import { authenticateUser } from './authMiddleware.js';
-//import authRoutes from './api/auth.js';
 import admin from 'firebase-admin';
-import { createRequire } from 'module';
 
-// Create a require function
-const require = createRequire(import.meta.url);
-
-// Use require to load the JSON file
-const credentials = require('./config/piggybank-firebase-adminsdk.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(credentials)
+// Dynamic import for Firebase Admin SDK configuration
+const credentials = await import('./config/piggybank-firebase-adminsdk.json', {
+  assert: { type: 'json' }
 });
 
+// Firebase Admin initialization with ESM syntax
+admin.initializeApp({
+  credential: admin.credential.cert(credentials.default)
+});
+
+const app = express();
+
+// Middleware to parse JSON and URL-encoded bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.urlencoded({extended: true}));
+// Dynamically import route modules as they are now ESM as well
+const customerRoutes = await import('./api/customer.js');
+const businessRoutes = await import('./api/business.js');
+const transactionsRoutes = await import('./api/transactions.js');
+const stocksRoutes = await import('./api/stocks.js');
 
+// Use imported routes
+app.use('/api/customers', customerRoutes.default);
+app.use('/api/business', businessRoutes.default);
+app.use('/api/transactions', transactionsRoutes.default);
+app.use('/api/stocks', stocksRoutes.default);
+
+// Register route
 app.post('/register', async (req, res) => {
-  const user = { 
-    email: req.body.email,
-    password: req.body.password
-  } 
   try {
     const userResponse = await admin.auth().createUser({
       email: req.body.email,
@@ -33,10 +39,10 @@ app.post('/register', async (req, res) => {
       emailVerified: false,
       disabled: false
     });
-    res.json({ 
-      message: 'User created successfully!', 
+    res.json({
+      message: 'User created successfully!',
       userId: userResponse.uid,
-      user: userResponse 
+      user: userResponse
     });
   } catch (error) {
     console.error(error);
@@ -44,21 +50,13 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Create a new express application instance
-
-// Define the port
-const PORT = process.env.PORT || 3000;
-
-// Middleware to parse JSON bodies
-
-//app.use('/api/auth', authRoutes);
-//const registerRoute = authRoutes.register;
-// Define a route
+// Define a simple route
 app.get('/', (req, res) => {
   res.send('Hello PiggyBackend');
 });
 
 // Start the server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
