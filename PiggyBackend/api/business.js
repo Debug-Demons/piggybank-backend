@@ -6,25 +6,22 @@ const router = express.Router();
 const db = admin.firestore;
 
 router.get('/:uid', async (req, res) => {
-    // Extract the `uid` from the request parameters. This `uid` is expected to be part of the URL.
     const uid = req.params.uid;
     try {
-        // Create a reference to the specific document in the 'Customers' collection that matches the `uid`.
-        const userRef = db.collection('Business').doc(uid);
-        // Asynchronously retrieve the document from Firestore.
-        const doc = await userRef.get();
-        // Check if the document exists.
-        if (doc.exists) {
-            // If the document exists, respond with status code 200 (OK) and the document data in JSON format.
-            res.status(200).json(doc.data());
+        // Query the 'Business' collection for documents where the 'UID' field matches the provided UID
+        const querySnapshot = await db.collection('Business').where('uid', '==', uid).get(); 
+
+        if (!querySnapshot.empty) {
+            // Assuming UID is unique and there's only one document matching it
+            const docData = querySnapshot.docs[0].data();
+            res.status(200).json(docData);
         } else {
-            // If the document does not exist, respond with status code 404 (Not Found) and a message.
-            res.status(404).send({ message: 'Business User not found' });
+            // If no documents found
+            res.status(404).send({ message: 'Business data not found' });
         }
     } catch (error) {
-        // If an error occurs during the operation, log the error and respond with status code 500 (Internal Server Error) and a message.
-        console.error('Error fetching user:', error);
-        res.status(500).send({ message: 'Failed to retrieve user' });
+        console.error('Error fetching customer:', error);
+        res.status(500).send({ message: 'Failed to retrieve Business data' });
     }
 });
 
