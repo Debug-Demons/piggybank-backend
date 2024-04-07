@@ -16,4 +16,13 @@ if (admin.apps.length === 0) { // Checks if admin is not already initialized
   }
   
 const db = admin.firestore;
+
+
+
+
+
+
+
+
+//DO NOT DELETE 
 export default router;

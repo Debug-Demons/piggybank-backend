@@ -17,4 +17,13 @@ if (admin.apps.length === 0) { // Checks if admin is not already initialized
   
 const db = admin.firestore;
 
+
+
+//Functions to be added
+//Add first transaction to specific user endpoint
+
+//Add transaction to existing user
+
+
+//DO NOT DELETE 
 export default router;

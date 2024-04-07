@@ -26,31 +26,49 @@ router.get('/:uid', async (req, res) => {
 });
 
 
-router.post('/createBusinessUser', async (req, res) => {
-    // Extract the user details from the request body
-    const { email, password, otherUserInfo } = req.body; //NEED MORE INFO 
-
+router.post('/create', async (req, res) => {
+    // Extract user and customer information from request body
+    const { email, password,  name, phoneNumber, address, businessType ,industryType} = req.body;
+  
     try {
-        // Use Firebase Admin SDK to create a new user in Firebase Authentication
+        // Create a new user in Firebase Authentication
         const userRecord = await admin.auth().createUser({
             email,
-            password // It's important to securely handle passwords and not log them
+            password,
         });
 
-        // Extract the UID assigned by Firebase to the new user
-        const uid = userRecord.uid;
+        // Prepare customer information for Firestore
+        const businessInfo = {
+            email,
+            uid: userRecord.uid, // Use the UID provided by Firebase Auth
+            name, //Not an object like customer
+            accountCreationDate: admin.firestore.FieldValue.serverTimestamp(), // Use server timestamp
+            businessType,
+            industryType,
+            phoneNumber,
+            address,
+        };
 
-        // Store additional information about the user in Firestore using the UID as the document ID
-        await db.collection('users').doc(uid).set(otherUserInfo);
+        // Add the customer record to the 'customers' collection in Firestore
+        await admin.firestore().collection('Business').doc(userRecord.uid).set(businessInfo);
 
-        // Respond to the client with the UID of the newly created user and a success message
-        res.status(201).send({ uid, message: ' Customer User created successfully with UID: ' + uid });
+        // Respond to the client
+        res.status(201).send({
+            message: 'Successfully created new user and business record',
+            uid: userRecord.uid,
+        });
     } catch (error) {
-        // Log any errors that occur during the process and send a 500 internal server error response
-        console.error('Error creating new customer user:', error);
-        res.status(500).send({ error: error.message });
+        console.error('Error creating new user and customer record:', error);
+        res.status(500).send({ message: 'Failed to create user and business record', error: error.message });
     }
 });
 
 
+
+
+
+
+
+
+//DO NOT DELETE 
 export default router;
