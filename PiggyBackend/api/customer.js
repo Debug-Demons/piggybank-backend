@@ -28,22 +28,40 @@ router.get('/:uid', async (req, res) => {
 });
 
 
-// Define a Post Route to create a new user/customer.
-router.post('/createCustomerUser', async (req, res) => {
-    const { email, password, otherUserInfo } = req.body;
-
+// POST endpoint to create a new user and customer record
+router.post('/create', async (req, res) => {
+    // Extract user and customer information from request body
+    const { email, password, dateOfBirth, name, phoneNumber, address } = req.body;
+  
     try {
+        // Create a new user in Firebase Authentication
         const userRecord = await admin.auth().createUser({
             email,
-            password
+            password,
         });
 
-        const uid = userRecord.uid;
-        await db.collection('users').doc(uid).set(otherUserInfo);
-        res.status(201).send({ uid, message: 'Customer User created successfully with UID: ' + uid });
+        // Prepare customer information for Firestore
+        const customerInfo = {
+            email,
+            dateOfBirth,
+            uid: userRecord.uid, // Use the UID provided by Firebase Auth
+            name, // Assuming this is an object { first: 'John', last: 'Doe' }
+            accountCreationDate: admin.firestore.FieldValue.serverTimestamp(), // Use server timestamp
+            phoneNumber,
+            address,
+        };
+
+        // Add the customer record to the 'customers' collection in Firestore
+        await admin.firestore().collection('Customers').doc(userRecord.uid).set(customerInfo);
+
+        // Respond to the client
+        res.status(201).send({
+            message: 'Successfully created new user and customer record',
+            uid: userRecord.uid,
+        });
     } catch (error) {
-        console.error('Error creating new customer user:', error);
-        res.status(500).send({ error: error.message });
+        console.error('Error creating new user and customer record:', error);
+        res.status(500).send({ message: 'Failed to create user and customer record', error: error.message });
     }
 });
 
