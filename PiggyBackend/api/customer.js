@@ -11,7 +11,7 @@ router.get('/:uid', async (req, res) => {
     const uid = req.params.uid;
     try {
         // Query the 'Customers' collection for documents where the 'UID' field matches the provided UID
-        const querySnapshot = await db.collection('Customers').where('UID', '==', uid).get();
+        const querySnapshot = await db.collection('Customers').where('uid', '==', uid).get(); //I'm not happy with this set up
 
         if (!querySnapshot.empty) {
             // Assuming UID is unique and there's only one document matching it
