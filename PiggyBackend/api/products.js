@@ -22,23 +22,37 @@ const db = admin.firestore(); //
  * if not send a error code along with failure message
  */
 
+//
 router.post('/create/:uid', async (req, res) =>{
-    const {uid, } = req.body;
+    //This should match with the data structure of our data model in firestore
+    const {
+        accountCreationDate,
+        address,
+        businessType,
+        email,
+        industryType,
+        name,
+        phonenumber,
+        uid  } = req.body;
+
+        //Note this won't have the collections when we first create it. To do that 
 })
 //second endpoint should be reteriving data from collection
 /**
  * Logic should follow like this 
- * using uid of business grab everything from collection 
+ * using uid of business as input 
+ * if user is found and there a collection called Products in it
+ * grab everything from collection 
  * if uid cannot be found send back error message
  * otherwise send back everything within that collection  
  */
-router.get('/getProductData', async (req, res) =>{
+router.get('/getProductData/:uid', async (req, res) =>{
 
 })
 //third endpoint should be deleting a product from the collection
 /**
  * Logic should follow like this
- * using the uid of the product as a input
+ * using the uid of the  as a input
  * find the record with the uid of the product
  * if record exists within the collection delete it 
  * send message back stating that it was successful along. Front end should then refresh page with new update list of products.
@@ -47,9 +61,12 @@ router.get('/getProductData', async (req, res) =>{
  */
 
 //fourth endpoint(s?) should update a product from the collection 
-//honestly save this one for last and brainstorm with group about it.
 /**
  * Logic should follow like this 
- * using the uid of the business and uid of the product as input 
+ * using the uid of the business and json file of product as input
  * 
  */
+
+router.post('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
+    return;
+})

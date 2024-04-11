@@ -3,7 +3,7 @@ import express from 'express';
 import admin from 'firebase-admin';
 
 const router = express.Router();
-const db = admin.firestore;
+const db = admin.firestore();
 
 
 //Endpoint for getting data 
@@ -22,8 +22,8 @@ router.get('/:uid', async (req, res) => {
             res.status(404).send({ message: 'Business data not found' });
         }
     } catch (error) {
-        console.error('Error fetching Business user :', error);
-        res.status(500).send({ message: 'Failed to retrieve Business data' });
+        console.error('Error fetching Business user:', error);
+        res.status(500).send({ message: 'Failed to retrieve Business data', error: error.message });
     }
 });
 

@@ -31,8 +31,14 @@ router.get('/:uid', async (req, res) => {
 // POST endpoint to create a new user and customer record
 router.post('/create', async (req, res) => {
     // Extract user and customer information from request body
-    const { email, password, dateOfBirth, name, phoneNumber, address } = req.body;
-  
+    const {
+        email,
+        password,
+        dateOfBirth,
+        name,
+        phoneNumber,
+        address } = req.body;
+
     try {
         // Create a new user in Firebase Authentication
         const userRecord = await admin.auth().createUser({
