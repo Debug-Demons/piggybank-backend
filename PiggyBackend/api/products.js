@@ -3,7 +3,7 @@ import express from 'express';
 import admin from 'firebase-admin';
 
 const router = express.Router();
-const db = admin.firestore(); //
+const db = admin.firestore();
 
 //Might need to integrate storage bucket here for pictures
 //Look at old IT database site for examples as to how you added in photos.
@@ -57,16 +57,30 @@ router.post('/create/:uid', async (req, res) => {
 
 //second endpoint should be reteriving data from collection
 /**
- * Logic should follow like this 
- * using uid of business as input 
+ * Logic should follow like this
+ * using uid of business as input
  * if user is found and there a collection called Products in it
- * grab everything from collection 
+ * grab everything from collection
  * if uid cannot be found send back error message
- * otherwise send back everything within that collection  
+ * otherwise send back everything within that collection
  */
 router.get('/getProductData/:uid', async (req, res) =>{
-    const uid = req.params.uid
+    const businessUid = req.params.uid //uid for business
+
+    try{
+
+    }catch(error){
+        console.error('Error getting products:', error);
+        res.status(500).send({ message: 'Failed to get products', error: error.message });
+    }
 })
+
+
+
+
+
+
+
 //third endpoint should be deleting a product from the collection
 /**
  * Logic should follow like this
@@ -86,5 +100,10 @@ router.get('/getProductData/:uid', async (req, res) =>{
  */
 
 router.post('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
-    return;
+    try{
+
+    }catch(error){
+        console.error('Error updating product:', error);
+        res.status(500).send({ message: 'Failed to update product', error: error.message });
+    }
 })
