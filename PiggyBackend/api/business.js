@@ -77,7 +77,7 @@ router.post('/create', async (req, res) => {
             uid: userRecord.uid,
         });
     } catch (error) {
-        console.error('Error creating new user and customer record:', error);
+        console.error('Error creating new user and Business record:', error);
         res.status(500).send({ message: 'Failed to create user and business record', error: error.message });
     }
 });

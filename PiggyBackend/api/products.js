@@ -16,27 +16,45 @@ const db = admin.firestore(); //
  *  first it should check to see if there is a collection within the record called products
  *  if so preceed as normal
  *  if not then create the collection and proceed
- * 
+ *
  * it should then insert the record into the collection along with a uid
  * if successful send back a messsage stating success
  * if not send a error code along with failure message
  */
 
 //
-router.post('/create/:uid', async (req, res) =>{
-    //This should match with the data structure of our data model in firestore
-    const {
-        accountCreationDate,
-        address,
-        businessType,
-        email,
-        industryType,
-        name,
-        phonenumber,
-        uid  } = req.body;
+router.post('/create/:uid', async (req, res) => {
+    const businessUid = req.params.uid; // This is the UID of the business
+    const { name, price } = req.body;
 
-        //Note this won't have the collections when we first create it. To do that 
-})
+    // Generate a new UID for the product or you can let Firestore generate it automatically
+    const productUid = admin.firestore().collection('dummy').doc().id;
+
+    const productData = {
+        name,
+        price,
+        uid: productUid // this is the new uid generated for the product
+    };
+
+    try {
+        // Get a reference to the business document
+        const businessDocRef = admin.firestore().collection('Business').doc(businessUid);
+
+        // Add the product to the 'Products' subcollection of this business
+        await businessDocRef.collection('Products').doc(productUid).set(productData);
+
+        // Respond to the client
+        res.status(201).send({
+            message: 'Product successfully created',
+            productId: productUid
+        });
+    } catch (error) {
+        console.error('Error creating product:', error);
+        res.status(500).send({ message: 'Failed to create product', error: error.message });
+    }
+});
+
+
 //second endpoint should be reteriving data from collection
 /**
  * Logic should follow like this 
@@ -47,7 +65,7 @@ router.post('/create/:uid', async (req, res) =>{
  * otherwise send back everything within that collection  
  */
 router.get('/getProductData/:uid', async (req, res) =>{
-
+    const uid = req.params.uid
 })
 //third endpoint should be deleting a product from the collection
 /**
