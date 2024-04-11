@@ -100,6 +100,9 @@ router.get('/getProductData/:uid', async (req, res) =>{
  */
 
 router.post('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
+    const businessUid = req.params.businessUid;
+    const productUid = req.params.productUid;
+
     try{
 
     }catch(error){
