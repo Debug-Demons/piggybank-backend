@@ -22,8 +22,9 @@ router.get('/:uid', async (req, res) => {
             res.status(404).send({ message: 'Customer not found' });
         }
     } catch (error) {
-        console.error('Error fetching customer:', error);
-        res.status(500).send({ message: 'Failed to retrieve customer' });
+        console.error('Error fetching Business user:', error);
+        res.status(500).send({ message: 'Failed to retrieve Business data', error: error.message });
+
     }
 });
 
