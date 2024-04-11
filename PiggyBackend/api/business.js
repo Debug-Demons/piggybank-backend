@@ -5,6 +5,8 @@ import admin from 'firebase-admin';
 const router = express.Router();
 const db = admin.firestore;
 
+
+//Endpoint for getting data 
 router.get('/:uid', async (req, res) => {
     const uid = req.params.uid;
     try {
@@ -20,15 +22,28 @@ router.get('/:uid', async (req, res) => {
             res.status(404).send({ message: 'Business data not found' });
         }
     } catch (error) {
-        console.error('Error fetching customer:', error);
+        console.error('Error fetching Business user :', error);
         res.status(500).send({ message: 'Failed to retrieve Business data' });
     }
 });
 
-
+//endpoint for creating a new business user.
+//http://localhost:3000/api/business/create
 router.post('/create', async (req, res) => {
-    // Extract user and customer information from request body
-    const { email, password,  name, phoneNumber, address, businessType ,industryType} = req.body;
+    // Extract user and Business information from request body
+       //This should match with the data structure of our data model in firestore
+       const {
+        email,
+        password,
+        address,
+        accountCreationDate,
+        businessType,
+        industryType,
+        name,
+        phoneNumber,
+        uid  } = req.body;
+
+        //Note this won't have the collections when we first create it. To do that 
   
     try {
         // Create a new user in Firebase Authentication
@@ -39,17 +54,21 @@ router.post('/create', async (req, res) => {
 
         // Prepare customer information for Firestore
         const businessInfo = {
-            email,
-            uid: userRecord.uid, // Use the UID provided by Firebase Auth
-            name, //Not an object like customer
-            accountCreationDate: admin.firestore.FieldValue.serverTimestamp(), // Use server timestamp
-            businessType,
-            industryType,
-            phoneNumber,
-            address,
+               //This should match with the data structure of our data model in firestore
+                accountCreationDate:admin.firestore.FieldValue.serverTimestamp(), //Timestamp with current date of creation. 
+                address,
+                businessType,
+                email,
+                industryType,
+                name,
+                phoneNumber,
+                uid: userRecord.uid,
+
+        //Note this won't have the collections when we first create it. To do that we first need the user to create a product
+        //To add to the POS System. This would be done on the front end where it will send the information to the expressjs server
         };
 
-        // Add the customer record to the 'customers' collection in Firestore
+        // Add the customer record to the 'Business' collection in Firestore
         await admin.firestore().collection('Business').doc(userRecord.uid).set(businessInfo);
 
         // Respond to the client

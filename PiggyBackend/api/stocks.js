@@ -19,7 +19,7 @@ const db = admin.firestore;
 
 
 
-
+//Needs integration with alpaca before we add anything to this. 
 
 
 
