@@ -64,16 +64,36 @@ router.post('/create/:uid', async (req, res) => {
  * if uid cannot be found send back error message
  * otherwise send back everything within that collection
  */
-router.get('/getProductData/:uid', async (req, res) =>{
-    const businessUid = req.params.uid //uid for business
+router.get('/getProductData/:uid', async (req, res) => {
+    const businessUid = req.params.uid; // UID for business
 
-    try{
+    try {
+        // Get a reference to the business document
+        const businessRef = db.collection('Business').doc(businessUid);
 
-    }catch(error){
+        // Attempt to retrieve the Products subcollection
+        const productsSnapshot = await businessRef.collection('Products').get();
+
+        if (productsSnapshot.empty) {
+            // If there are no products found
+            res.status(404).send({ message: 'No products found for this business' });
+        } else {
+            // Collect all products into an array
+            const products = productsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // Send back the array of products
+            res.status(200).json(products);
+        }
+    } catch (error) {
         console.error('Error getting products:', error);
         res.status(500).send({ message: 'Failed to get products', error: error.message });
     }
-})
+});
+
+export default router;
 
 
 
