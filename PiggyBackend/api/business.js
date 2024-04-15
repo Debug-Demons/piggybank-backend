@@ -85,7 +85,20 @@ router.post('/create', async (req, res) => {
 
 
 
+router.put('/updateBusiness/:uid', async(req, res )=>{
+    try {
 
+        const userId = req.params.uid;
+        const updatedUserData = req.body;
+        // Update the user profile in Firebase
+        await firebase.firestore().collection('Business').doc(userId).update(updatedUserData);
+        res.status(200).json({ message: 'User profile updated successfully' });
+      } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({ message: 'Failed to update user profile' });
+      }
+    });
+})
 
 
 
