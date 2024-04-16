@@ -1,6 +1,7 @@
 // Import express using ESM syntax
 import express from 'express';
 const app = express();
+import { handleTransaction } from './api/transactions/transactionController.js';
 
 //import { authenticateUser } from './authMiddleware.js';
 //import authRoutes from './api/auth.js';
@@ -31,7 +32,9 @@ app.post('/register', async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       emailVerified: false,
-      disabled: false
+      disabled: false,
+      businessAcc: false,
+      adminAcc: false
     });
     res.json({ 
       message: 'User created successfully!', 
@@ -43,6 +46,8 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error creating user' });
   }
 });
+
+app.post('/transaction', handleTransaction);
 
 // Create a new express application instance
 
