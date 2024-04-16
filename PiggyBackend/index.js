@@ -23,13 +23,13 @@ const customerRoutes = await import('./api/customer.js');
 const businessRoutes = await import('./api/business.js');
 const transactionsRoutes = await import('./api/transactions.js');
 const stocksRoutes = await import('./api/stocks.js');
-
+const productRoutes = await import('./api/products.js');
 // Use imported routes
 app.use('/api/customers', customerRoutes.default);
 app.use('/api/business', businessRoutes.default);
 app.use('/api/transactions', transactionsRoutes.default);
 app.use('/api/stocks', stocksRoutes.default);
-
+app.use('/api/products', productRoutes.default);
 // Register route
 app.post('/register', async (req, res) => {
   try {

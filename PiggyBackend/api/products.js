@@ -93,12 +93,6 @@ router.get('/getProductData/:uid', async (req, res) => {
     }
 });
 
-export default router;
-
-
-
-
-
 
 
 //third endpoint should be deleting a product from the collection
@@ -119,14 +113,33 @@ export default router;
  * 
  */
 
-router.post('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
+router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
     const businessUid = req.params.businessUid;
     const productUid = req.params.productUid;
+    const { price } = req.body;  // Assuming new price is sent in the request body
+
+    const productDocRef = admin.firestore()
+    .collection('Business')
+    .doc(businessUid)
+    .collection('Products')
+    .doc(productUid);
 
     try{
 
+        //Update the price field of the document
+        await productDocRef.update({
+            price: price
+        });
+
+        res.status(200).send({
+            message: 'Product price updated successfully',
+            productId: productUid,
+            newPrice: price
+        });
     }catch(error){
         console.error('Error updating product:', error);
         res.status(500).send({ message: 'Failed to update product', error: error.message });
     }
 })
+
+export default router;
