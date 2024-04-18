@@ -1,3 +1,4 @@
+/*
 // Importing necessary modules using ES6 import syntax
 import alpaca from './alpacaAPI.js';
 
@@ -47,3 +48,4 @@ export async function placeOrder(symbol, amount, side) {
       throw error;
     }
   };
+  */

@@ -1,7 +1,7 @@
 // Import express using ESM syntax
 import express from 'express';
 const app = express();
-import { handleTransaction } from './api/transactions/transactionController.js';
+import { investInTechGiants } from './api/transactions/alpacaAPI.js';
 
 //import { authenticateUser } from './authMiddleware.js';
 //import authRoutes from './api/auth.js';
@@ -21,6 +21,21 @@ admin.initializeApp({
 app.use(express.json());
 
 app.use(express.urlencoded({extended: true}));
+
+app.post('/invest', async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ success: false, error: "Invalid amount provided." });
+    }
+
+    const results = await investInTechGiants(amount);
+    res.status(200).json({ success: true, data: results });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 app.post('/register', async (req, res) => {
   const user = { 
@@ -47,7 +62,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.post('/transaction', handleTransaction);
+//app.post('/transaction', handleTransaction);
 
 // Create a new express application instance
 
