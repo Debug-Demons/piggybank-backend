@@ -1,7 +1,13 @@
 // Import express using ESM syntax
 import express from 'express';
 import admin from 'firebase-admin';
+import Alpaca from '@alpacahq/alpaca-trade-api';
 
+const alpaca = new Alpaca({
+  keyId: 'PK4CGHPK2KFGO9WWB6NR',
+  secretKey: 'TAg0UHcAkW2fJG9z57HTjg9GJAPovWIAM2QIKOfz',
+  paper: true, // Set to false when using in production
+});
 // Dynamic import for Firebase Admin SDK configuration
 const credentials = await import('./config/piggybank-firebase-adminsdk.json', {
   assert: { type: 'json' }
@@ -47,6 +53,37 @@ app.post('/register', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error creating user' });
+  }
+});
+
+// Helper function to get the current price of a stock
+async function getCurrentPrice(symbol) {
+  const response = await alpaca.getLatestTrade(symbol);
+  return response.price;
+}
+
+app.post('/buy-stocks', async (req, res) => {
+  console.log("Received request:", req.body);
+  const { amount } = req.body;
+  const symbols = ['AAPL', 'MSFT', 'GOOGL']; // Example stocks
+
+  try {
+      const investmentPerStock = (amount / symbols.length - 0.01).toFixed(2);
+
+      for (const symbol of symbols) {
+          await alpaca.createOrder({
+              symbol: symbol,
+              notional: investmentPerStock,
+              side: 'buy',
+              type: 'market',
+              time_in_force: 'day'
+          });
+      }
+
+      res.send('Stocks purchased successfully.');
+  } catch (error) {
+      console.error('Error purchasing stocks:', error);
+      res.status(500).send('Error purchasing stocks');
   }
 });
 
