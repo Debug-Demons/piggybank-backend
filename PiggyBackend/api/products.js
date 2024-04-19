@@ -95,23 +95,7 @@ router.get('/getProductData/:uid', async (req, res) => {
 
 
 
-//third endpoint should be deleting a product from the collection
-/**
- * Logic should follow like this
- * using the uid of the  as a input
- * find the record with the uid of the product
- * if record exists within the collection delete it 
- * send message back stating that it was successful along. Front end should then refresh page with new update list of products.
- * Other wise send a error message stating that something went wrong
- * if record for does not exist for some reason send back a message stating that something went wrong.
- */
-
-//fourth endpoint(s?) should update a product from the collection 
-/**
- * Logic should follow like this 
- * using the uid of the business and json file of product as input
- * 
- */
+//This just updates the price of the product
 
 router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
     const businessUid = req.params.businessUid;
@@ -125,6 +109,11 @@ router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
     .doc(productUid);
 
     try{
+            // Check if the product exists before deleting
+        const productSnapshot = await productDocRef.get();
+        if (!productSnapshot.exists) {
+        return res.status(404).json({ message: "Product not found" });
+        }
 
         //Update the price field of the document
         await productDocRef.update({
@@ -140,6 +129,33 @@ router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
         console.error('Error updating product:', error);
         res.status(500).send({ message: 'Failed to update product', error: error.message });
     }
-})
+});
 
+//endpoint to delete a product
+router.delete('/deleteProductRecord/:businessUid/:productUid', async (req, res)=>{
+    const businessUid = req.params.businessUid;
+    const productUid = req.params.productUid;
+    try{
+        const productDocRef = admin.firestore()
+        .collection('Business')
+        .doc(businessUid)
+        .collection('Products')
+        .doc(productUid);
+
+            // Check if the product exists before deleting
+        const productSnapshot = await productDocRef.get();
+        if (!productSnapshot.exists) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        await productDocRef.delete();
+
+        return res.status(200).json({ message: "Product deleted successfully" });
+
+    }catch (error){
+        console.error("Error deleting product:", error);
+        return res.status(500).json({ message: "Failed to delete product" });
+
+    }
+});
 export default router;
