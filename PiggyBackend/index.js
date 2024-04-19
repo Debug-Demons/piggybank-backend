@@ -4,8 +4,8 @@ import admin from 'firebase-admin';
 import Alpaca from '@alpacahq/alpaca-trade-api';
 
 const alpaca = new Alpaca({
-  keyId: 'PK4CGHPK2KFGO9WWB6NR',
-  secretKey: 'TAg0UHcAkW2fJG9z57HTjg9GJAPovWIAM2QIKOfz',
+  keyId: 'PKJV6JGDARHDJ3ZNYEGV',
+  secretKey: '11gF1Qd2aciGiAJCdLuJm1ZelSawhJWBifKIGCd3',
   paper: true, // Set to false when using in production
 });
 // Dynamic import for Firebase Admin SDK configuration
@@ -63,9 +63,9 @@ async function getCurrentPrice(symbol) {
 }
 
 app.post('/buy-stocks', async (req, res) => {
-  console.log("Received request:", req.body);
+  console.log("Received request to buy:", req.body);
   const { amount } = req.body;
-  const symbols = ['AAPL', 'MSFT', 'GOOGL']; // Example stocks
+  const symbols = ['AAPL','GOOG','MSFT']; // Example stocks
 
   try {
       const investmentPerStock = (amount / symbols.length - 0.01).toFixed(2);
@@ -84,6 +84,31 @@ app.post('/buy-stocks', async (req, res) => {
   } catch (error) {
       console.error('Error purchasing stocks:', error);
       res.status(500).send('Error purchasing stocks');
+  }
+});
+
+app.post('/sell-stocks', async (req, res) => {
+  console.log("Received request to sell:", req.body);
+  const { amount } = req.body;
+  const symbols = ['AAPL', 'MSFT', 'GOOGL']; // Example stocks
+
+  try {
+      const investmentPerStock = (amount / symbols.length - 0.01).toFixed(2);
+
+      for (const symbol of symbols) {
+          await alpaca.createOrder({
+              symbol: symbol,
+              notional: investmentPerStock,
+              side: 'sell',  // Change 'buy' to 'sell' to sell the stock
+              type: 'market',
+              time_in_force: 'day'
+          });
+      }
+
+      res.send('Stocks sold successfully.');
+  } catch (error) {
+      console.error('Error selling stocks:', error);
+      res.status(500).send('Error selling stocks');
   }
 });
 
