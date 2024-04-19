@@ -69,10 +69,7 @@ app.post('/buy-stocks', async (req, res) => {
   }
 });
 
-// Define a simple route
-app.get('/', (req, res) => {
-  res.send('Hello PiggyBackend');
-});
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
