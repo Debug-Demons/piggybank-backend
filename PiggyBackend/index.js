@@ -36,25 +36,7 @@ app.use('/api/business', businessRoutes.default);
 app.use('/api/transactions', transactionsRoutes.default);
 app.use('/api/stocks', stocksRoutes.default);
 app.use('/api/products', productRoutes.default);
-// Register route
-app.post('/register', async (req, res) => {
-  try {
-    const userResponse = await admin.auth().createUser({
-      email: req.body.email,
-      password: req.body.password,
-      emailVerified: false,
-      disabled: false
-    });
-    res.json({
-      message: 'User created successfully!',
-      userId: userResponse.uid,
-      user: userResponse
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating user' });
-  }
-});
+
 
 // Helper function to get the current price of a stock
 async function getCurrentPrice(symbol) {
