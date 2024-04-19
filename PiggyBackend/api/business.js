@@ -36,12 +36,10 @@ router.post('/create', async (req, res) => {
         email,
         password,
         address,
-        accountCreationDate,
         businessType,
-        industryType,
         name,
         phoneNumber,
-        uid  } = req.body;
+          } = req.body;
 
         //Note this won't have the collections when we first create it. To do that 
   
@@ -59,7 +57,6 @@ router.post('/create', async (req, res) => {
                 address,
                 businessType,
                 email,
-                industryType,
                 name,
                 phoneNumber,
                 uid: userRecord.uid,
