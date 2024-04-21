@@ -35,7 +35,6 @@ router.post('/create', async (req, res) => {
     const {
         email,
         password,
-        dateOfBirth,
         name,
         phoneNumber,
         address } = req.body;
@@ -50,7 +49,6 @@ router.post('/create', async (req, res) => {
         // Prepare customer information for Firestore
         const customerInfo = {
             email,
-            dateOfBirth,
             uid: userRecord.uid, // Use the UID provided by Firebase Auth
             name, // Assuming this is an object { first: 'John', last: 'Doe' }
             accountCreationDate: admin.firestore.FieldValue.serverTimestamp(), // Use server timestamp
