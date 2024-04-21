@@ -1,5 +1,8 @@
 // Import express using ESM syntax
 import express from 'express';
+
+const app = express();
+import { investInTechGiants } from './api/transactions/alpacaAPI.js';
 import admin from 'firebase-admin';
 import Alpaca from '@alpacahq/alpaca-trade-api';
 
@@ -40,6 +43,40 @@ app.use('/api/products', productRoutes.default);
 
 
 
+app.post('/invest', async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ success: false, error: "Invalid amount provided." });
+    }
+
+    const results = await investInTechGiants(amount);
+    res.status(200).json({ success: true, data: results });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/register', async (req, res) => {
+  const user = { 
+    email: req.body.email,
+    password: req.body.password
+  } 
+  try {
+    const userResponse = await admin.auth().createUser({
+      email: req.body.email,
+      password: req.body.password,
+      emailVerified: false,
+      disabled: false,
+      businessAcc: false,
+      adminAcc: false
+    });
+    res.json({ 
+      message: 'User created successfully!', 
+      userId: userResponse.uid,
+      user: userResponse 
+    });
 //
 app.set('trust proxy', true);
 
@@ -68,12 +105,17 @@ app.post('/buy-stocks', async (req, res) => {
       }
 
       res.send('Stocks purchased successfully.');
+
   } catch (error) {
       console.error('Error purchasing stocks:', error);
       res.status(500).send('Error purchasing stocks');
   }
 });
 
+
+//app.post('/transaction', handleTransaction);
+
+// Create a new express application instance
 
 
 // Start the server
