@@ -1,1 +1,11 @@
 runtime: nodejs20
+
+env_variables:
+  FIREBASE_API_KEY: 'AIzaSyB8D6oPus_pTHaseLuHcCXl-Rzac41OCeI'
+  FIREBASE_AUTH_DOMAIN: 'piggybank-82fd1.firebaseapp.com'
+  FIREBASE_PROJECTID: 'piggybank-82fd1'
+  FIREBASE_BUCKET: 'piggybank-82fd1.appspot.com'
+  FIREBASE_MESSAGING_SENDER_ID: '292913345177'
+  FIREBASE_APP_ID: '1:292913345177:web:a5735418a14f136644be08'
+  FIREBASE_MEASUREMENT_ID: 'G-NSM90GV5DE'
+
