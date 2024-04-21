@@ -25,7 +25,7 @@ const db = admin.firestore();
 //
 router.post('/create/:uid', async (req, res) => {
     const businessUid = req.params.uid; // This is the UID of the business
-    const { name, price } = req.body;
+    const { name, price  } = req.body;
 
     // Generate a new UID for the product or you can let Firestore generate it automatically
     const productUid = admin.firestore().collection('dummy').doc().id;
@@ -33,6 +33,7 @@ router.post('/create/:uid', async (req, res) => {
     const productData = {
         name,
         price,
+        quantity: 0,
         uid: productUid // this is the new uid generated for the product
     };
 
