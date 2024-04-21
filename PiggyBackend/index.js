@@ -37,6 +37,8 @@ app.use('/api/transactions', transactionsRoutes.default);
 app.use('/api/stocks', stocksRoutes.default);
 app.use('/api/products', productRoutes.default);
 
+//
+app.set('trust proxy', true);
 
 // Helper function to get the current price of a stock
 async function getCurrentPrice(symbol) {
