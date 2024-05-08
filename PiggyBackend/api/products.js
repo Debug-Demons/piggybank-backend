@@ -98,10 +98,10 @@ router.get('/getProductData/:uid', async (req, res) => {
 
 //This just updates the price of the product
 
-router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
+ router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
     const businessUid = req.params.businessUid;
     const productUid = req.params.productUid;
-    const { price } = req.body;  // Assuming new price is sent in the request body
+    const { name, price } = req.body;  // Assuming new price is sent in the request body
 
     const productDocRef = admin.firestore()
     .collection('Business')
@@ -118,12 +118,14 @@ router.put('/updateProductRecord/:businessUid/:productUid', async (req, res)=>{
 
         //Update the price field of the document
         await productDocRef.update({
+            name: name,
             price: price
         });
 
         res.status(200).send({
             message: 'Product price updated successfully',
             productId: productUid,
+            newName: name,
             newPrice: price
         });
     }catch(error){
