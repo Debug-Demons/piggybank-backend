@@ -19,130 +19,77 @@ if (admin.apps.length === 0) { // Checks if admin is not already initialized
 
 
 //This adds a transaction to business user
-  router.post('/addTransactionBusiness/:businessUid', async (req, res) => {
-    const businessUid = req.params.businessUid;  // Corrected to use the right parameter name
-    const { customerName, businessName, customerEmail, paymentMethod, orderTotal, items } = req.body;
-  
-    const transactionUid = admin.firestore().collection('dummy').doc().id;  // Dummy collection is used to generate ID, make sure this is intentional
-    const transactionData = {
-      customerName: customerName,
-      customerEmail: customerEmail,
-      orderTotal: orderTotal,
-      items: items,
-      businessName: businessName,
-      dateOfpurchase: admin.firestore.FieldValue.serverTimestamp(),
-      paymentMethod: paymentMethod,
-      uid: transactionUid
-    };
-  
-    try {
-      // Get a reference to the business document
-      const businessDocRef = admin.firestore().collection('Business').doc(businessUid);
-  
-      // Correctly use the document ID to set the transaction data
-      await businessDocRef.collection('Transaction').doc(transactionUid).set(transactionData);
-  
-      // Respond to the client with the correct ID
-      res.status(201).send({
-          message: 'Transaction successfully created for business',
-          transactionUid: transactionUid  // Corrected the key here from productId to transactionUid
-      });
-    } catch (error) {
-      console.error('Error creating Transaction:', error);
-      res.status(500).send({ message: 'Failed to create transaction for business', error: error.message });
-    }
-  });
-  
+router.post('/addTransactionBusiness/:uid', async (req, res) => {
+  const businessUid = req.params.uid;
+  const { customerName, businessName,  paymentMethod, orderTotal, items } = req.body;
 
-  router.post('/addTransactionCustomer/:customerUid', async (req, res) => {
-    const customerUid = req.params.customerUid;  // Extract the customer UID from the route parameters
-    const { customerName, businessName, customerEmail, paymentMethod, orderTotal, items } = req.body;
-  
-    const transactionUid = admin.firestore().collection('dummy').doc().id;  // Generating an ID for the transaction
-    const transactionData = {
-      customerName: customerName,
-      customerEmail: customerEmail,
-      orderTotal: orderTotal,
-      items: items,
-      businessName: businessName,
-      dateOfpurchase: admin.firestore.FieldValue.serverTimestamp(),
-      paymentMethod: paymentMethod,
-      uid: transactionUid
-    };
-  
-    try {
-      // Get a reference to the customer document
-      const customerDocRef = admin.firestore().collection('Customers').doc(customerUid);
-  
-      // Add the transaction to the 'Transaction' subcollection of this customer
-      await customerDocRef.collection('Transaction').doc(transactionUid).set(transactionData);
-  
-      // Respond to the client
-      res.status(201).send({
-          message: 'Transaction successfully created',
-          transactionUid: transactionUid
-      });
-    } catch (error) {
-      console.error('Error creating Transaction:', error);
-      res.status(500).send({ message: 'Failed to create transaction', error: error.message });
-    }
-  });
-  
+  // Generate a unique ID for the transaction
+  const transactionUid = admin.firestore().collection('dummy').doc().id;
+
+  // Transaction data structure
+  const transactionData = {
+    customerName,
+    orderTotal,
+    items,
+    businessName,
+    dateOfpurchase: admin.firestore.FieldValue.serverTimestamp(),
+    paymentMethod,
+    uid: transactionUid
+  };
+
+  try {
+    // Get a reference to the business document
+    const businessDocRef = admin.firestore().collection('Business').doc(businessUid);
+
+    // Add the product to the 'Products' subcollection of this business
+    await businessDocRef.collection('Transaction').doc(productUid).set(productData);
+
+    // Respond to the client
+    res.status(201).send({
+        message: 'Transaction successfully created',
+        productId: productUid
+    });
+} catch (error) {
+    console.error('Error creating Transaction:', error);
+    res.status(500).send({ message: 'Failed to create Transaction', error: error.message });
+}
+});
 
 
-router.get('/getTransactionBusiness/:uid', async (req, res)=>{
-   const businessUid = req.params.uid; // UID for business
+
+
+
+
+  router.get('/getTransactionDataBusiness/:uid', async (req, res) => {
+    const businessUid = req.params.uid; // UID for business
 
     try {
         // Get a reference to the business document
         const businessRef = db.collection('Business').doc(businessUid);
 
         // Attempt to retrieve the Products subcollection
-        const transactionSnapshot = await businessRef.collection('transactions').get();
+        const productsSnapshot = await businessRef.collection('Transaction').get();
 
-        if (transactionSnapshot.empty) {
-            // If there are no transaction found
-            res.status(404).send({ message: 'No transaction found for this business' });
+        if (productsSnapshot.empty) {
+            // If there are no products found
+            res.status(404).send({ message: 'No Transactions found for this business' });
         } else {
-            // Collect all transaction into an array
-            const transactions = transactionSnapshot.docs.map(doc => ({
+            // Collect all products into an array
+            const products = productsSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
-            // Send back the array of transactions
-            res.status(200).json(transactions);
+            // Send back the array of products
+            res.status(200).json(products);
         }
     } catch (error) {
-        console.error('Error getting transactions:', error);
+        console.error('Error getting transaction:', error);
         res.status(500).send({ message: 'Failed to get transaction', error: error.message });
     }
 });
+ 
 
-router.get('/getTransactionsCustomers/:uid', async (req, res)=>{
-    const customerUid = req.params.uid;
-    try {
-      const customerRef = db.collection('Customer').doc(customerUid);
-
-      const transactionSnapshot = await customerRef.collection('transaction').get();
-
-      if (transactionSnapshot.empty) {
-        // If there are no transaction found
-        res.status(404).send({ message: 'No transaction found for this business' });
-      } else {
-        //collect all transaction into array
-        const transactions = transactionSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-      }
-      // Send back the array of transactions
-      res.status(200).json(transactions);
-    } catch (error) {
-      console.error('Error getting transactions:', error);
-      res.status(500).send({ message: 'Failed to get transaction', error: error.message });
-    }
-})
 
 
 //DO NOT DELETE 
