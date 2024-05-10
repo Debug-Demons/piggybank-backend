@@ -5,6 +5,32 @@ import admin from 'firebase-admin';
 const router = express.Router();
 const db = admin.firestore(); // Adjusted to call firestore as a method: admin.firestore()
 
+
+router.get('/customers/loyalty/:email', async (req, res) => {
+    const email = req.params.email;
+  
+    try {
+      // Query the 'customers' collection for a customer with the given email address
+      const querySnapshot = await db.collection('customers').where('email', '==', email).limit(1).get();
+      
+      // Check if the query returned any results
+      if (querySnapshot.empty) {
+        return res.status(404).send('Customer not found');
+      }
+  
+      // Assuming the query will return a single document (due to `.limit(1)`), retrieve the first one
+      const customerDoc = querySnapshot.docs[0];
+      const customerData = customerDoc.data();
+  
+      // Extract and send back the roundup (loyalty) amount
+      const roundupAmount = customerData.loyalty ?? 0;
+      res.json({ email, roundupAmount });
+    } catch (error) {
+      console.error('Error fetching customer by email:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
 // Endpoint for getting user records from uid
 // Endpoint for getting user records based on a UID field within the documents
 router.get('/:uid', async (req, res) => {
