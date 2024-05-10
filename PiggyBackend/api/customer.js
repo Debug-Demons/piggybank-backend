@@ -98,8 +98,6 @@ router.post('/create', async (req, res) => {
 
 
 //update user profile
-//I'm 
-
 router.put('/updateCustomer/:uid', async (req, res) =>{
     const userId = req.params.uid;
     const updatedUserData = req.body;
